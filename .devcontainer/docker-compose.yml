@@ -1,8 +1,6 @@
 services:
   dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
     volumes:
       - ..:/workspace:cached
     network_mode: service:db
@@ -14,5 +12,3 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: '1791'
       MYSQL_DATABASE: mpdb
-    ports:
-      - "3306:3306"
