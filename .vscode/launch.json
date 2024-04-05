@@ -7,7 +7,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "${workspaceFolder}/app/flask/app.py",
+                "FLASK_APP": "${workspaceFolder}/app/app.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
@@ -17,13 +17,6 @@
             ],
             "jinja": true,
             "autoStartBrowser": false
-        },
-        {
-            "type": "node-terminal",
-            "name": "Run Script: dev",
-            "request": "launch",
-            "command": "npm run dev",
-            "cwd": "${workspaceFolder}/app/frontend"
         }
     ]
 }
