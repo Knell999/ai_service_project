@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "ai-service-project2"
+version = "0.0.1"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+mypy = "^1.9.0"
+selenium = "^4.19.0"
+flask = "^3.0.2"
+pymysql = "^1.1.0"
+cryptography = "^42.0.5"
+aiofiles = "^23.2.1"
+aiohttp = "^3.9.3"
+opencv-python = "^4.9.0.80"
+ruff = "^0.3.5"
+isort = "^5.13.2"
+playwright = "^1.42.0"
+scikit-learn = "^1.4.1.post1"
+facenet-pytorch = "^2.5.3"
+torch = "^2.2.2"
+torchvision = "^0.17.2"
+torchaudio = "^2.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.4"
+tensorflow = "^2.16.1"
+nobuco = "^0.13.1"
+keras = "^3.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
