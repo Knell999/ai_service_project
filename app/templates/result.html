@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container my-5">
+        <h1 class="text-center mb-4">{{ title }}</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-4">Result (1)</h5>
+                        <div class="mb-4">
+                            <img src="{{ url_for('static', filename='placeholder.png') }}" alt="Placeholder"
+                                 class="img-fluid">
+                        </div>
+                        <p>asdf %</p>
+                        <div class="btn-group">
+                            <button class="btn btn-primary">자세히</button>
+                            <button class="btn btn-secondary">다시 할래요</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-center">Face Comparison</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='placeholder.png') }}" alt="Placeholder"
+                             class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Similarity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Nose</td>
+                            <td>68%</td>
+                        </tr>
+                        <tr>
+                            <td>Mouth</td>
+                            <td>75%</td>
+                        </tr>
+                        <tr>
+                            <td>Eyes</td>
+                            <td>81%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button class="btn btn-primary">Submit</button>
+            <button class="btn btn-secondary">Try Another</button>
+        </div>
+    </div>
+{% endblock %}
