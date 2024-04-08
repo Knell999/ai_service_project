@@ -1,16 +1,18 @@
+# 필요한 라이브러리들을 임포트합니다.
 import asyncio
 import logging
 import pathlib
 import ssl
 import datetime
+
 # import random
 from urllib.parse import urlparse, parse_qs
 
 from playwright.async_api import async_playwright
-import aiofiles  # For asynchronous file operations
-import aiohttp  # For making async HTTP requests
+import aiofiles
+import aiohttp
 
-# Configure logging as before
+# 로깅을 설정합니다.
 logging.basicConfig(
     format="%(asctime)s - %(message)s",
     level=logging.INFO,
@@ -18,16 +20,28 @@ logging.basicConfig(
     filename=datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S.log"),
 )
 
+# SSL 컨텍스트를 생성하고 설정합니다.
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 ssl_context.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
 
+# 다운로드 시 허용되는 컨텐츠 타입을 설정합니다.
 accepted_content_types = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
 
 
 class AsyncImageDownloader:
+    """
+    AsyncImageDownloader 클래스는 Playwright를 사용하여 이미지를 다운로드하는 클래스입니다.
+    """
+
     def __init__(self, search_for):
+        """
+        클래스를 초기화합니다.
+
+        :param search_for: 검색어
+        """
+
         self.search_for = search_for
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
@@ -41,6 +55,15 @@ class AsyncImageDownloader:
         self.failed_downloads = 0
 
     async def fetch_image_url(self, page, image):
+        """
+        구글 이미지 검색 같이 클릭이 필요한 경우에 쓰입니다.
+        이미지 URL을 가져옵니다.
+
+        :param page: 페이지
+        :param image: 이미지
+        :return: 이미지 URL
+        """
+
         try:
             logging.info("Clicking on images...")
             await image.click()
@@ -56,6 +79,14 @@ class AsyncImageDownloader:
             return
 
     async def fetch_image_urls(self, page):
+        """
+        이미지 URL들을 가져옵니다.
+        현재 Naver 이미지 검색에 맞춰져 있습니다.
+
+        :param page: 페이지
+        :return: 이미지 URL들
+        """
+
         image_urls = []
         logging.info(f"Searching for {self.search_for}")
         await page.goto(
@@ -120,6 +151,15 @@ class AsyncImageDownloader:
         return image_urls
 
     async def download_image(self, i, session, url, path):
+        """
+        이미지를 다운로드합니다.
+
+        :param i: 인덱스(파일명에 사용됩니다.)
+        :param session: 세션
+        :param url: URL
+        :param path: 경로
+        """
+
         async with session.get(url) as response:
             pathlib.Path(path).mkdir(parents=True, exist_ok=True)
             if response.status // 100 == 2:
@@ -138,7 +178,11 @@ class AsyncImageDownloader:
                 logging.error(f"Failed to download {url}")
                 self.failed_downloads += 1
 
-    async def main(self):
+    async def task(self):
+        """
+        메인 함수입니다.
+        """
+
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
@@ -160,11 +204,10 @@ class AsyncImageDownloader:
             await browser.close()
 
 
-# Usage example
 if __name__ == "__main__":
     search_keywords = ["이승기", "남주혁", "박보영", "서강준"]
     downloader = AsyncImageDownloader(search_keywords[3])
-    asyncio.run(downloader.main())
+    asyncio.run(downloader.task())
     logging.info(f"Failed gathers: {downloader.failed_gathers}")
     logging.info(
         f"Successful downloads: {downloader.successful_downloads}, Failed downloads: {downloader.failed_downloads}"
