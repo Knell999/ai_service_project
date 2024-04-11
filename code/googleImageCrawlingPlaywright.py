@@ -47,7 +47,7 @@ class AsyncImageDownloader:
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         }
-        self.scroll_amount = 5
+        self.scroll_amount = 10
 
         self.found_images = 0
         self.failed_gathers = 0
@@ -197,7 +197,7 @@ class AsyncImageDownloader:
                         i,
                         session,
                         url,
-                        f"imgs/{self.search_for}_images",  # adjust path as needed
+                        f"imgs/{self.search_for}_images",  # adjust path as needed (for vs code, code/imgs, for pycharm, imgs)
                     )
                     for i, url in enumerate(urls)
                 ]

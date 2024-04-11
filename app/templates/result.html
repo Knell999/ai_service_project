@@ -3,20 +3,17 @@
 {% block content %}
 
     <div class="container my-5">
-        <h1 class="text-center mb-4">{{ title }}</h1>
+        <h1 class="text-center mb-4">~~result title placeholder~~</h1>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5 class="card-title mb-4">Result (1)</h5>
+                        <h5 class="card-title mb-4">{{ "당신이 {}일 확률은 {}% 입니다.".format(result[0][0], result[0][1]) }}</h5>
                         <div class="mb-4">
-                            <img src="{{ url_for('static', filename='placeholder.png') }}" alt="Placeholder"
-                                 class="img-fluid">
+                            <img src="data:image/jpeg;base64,{{ img_data }}" class="img-fluid"/>
                         </div>
-                        <p>asdf %</p>
                         <div class="btn-group">
-                            <button class="btn btn-primary">자세히</button>
-                            <button class="btn btn-secondary">다시 할래요</button>
+                            <button type="button" class="btn btn-secondary" onclick="location.href='/'">다시하기</button>
                         </div>
                     </div>
                 </div>
@@ -24,7 +21,7 @@
         </div>
     </div>
 
-
+    <h1>공사중!! (detail)</h1>
     <div class="card">
         <div class="card-header">
             <h4 class="text-center">Face Comparison</h4>

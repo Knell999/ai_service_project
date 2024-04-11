@@ -4,7 +4,7 @@
         <div class="container px-4 px-lg-5">
             <!-- Heading Row-->
             <div class="row gx-4 gx-lg-5 align-items-center my-5">
-                <div class="col-lg-7"><img class="img-fluid rounded mb-4 mb-lg-0" src="{{url_for('static', filename='img/similar1.jpg')}}" alt="..." /></div>
+                <div class="col-lg-7"><img class="img-fluid rounded mb-4 mb-lg-0" src={{ url_for('static', filename='img/similar1.jpg') }} alt="..."></div>
                 <div class="col-lg-5">
                     <h1 class="font-weight-light">나와 닮은 연예인은 누구?</h1>
                     <p>당신과 닮은 꼴 연예인을 찾아 볼 수 있어요! <br>이 페이지는 딥러닝을 통한 얼굴 인식 기술을 활용하여 <br>당신의 사진을 분석하고, 닮은 꼴로 판단되는 연예인을 찾아드려요!</p>

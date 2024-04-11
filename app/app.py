@@ -1,3 +1,5 @@
+import pathlib
+
 from flask import (
     Flask,
     request,
@@ -8,7 +10,8 @@ from flask import (
     session,
     jsonify,
 )
-from module import dbModule, faceModule
+from module import dbModule
+from module.faceModule import FaceAnalysis
 
 
 app = Flask(__name__)
@@ -109,16 +112,21 @@ def similar_upload():
         if file.filename == "":
             return "No selected file"
 
-        file_path = "uploads/" + file.filename
+        file_path = "static/uploads/" + file.filename
         file.save(file_path)
 
-        fa = faceModule.face_anlysis(file_path)
-        result = fa.similar_face()
-        # jsonify({'message': '파일 업로드 완료'})
-        # 파일 업로드 성공을 응답으로 반환
-        return result
-    else:
-        return render_template("similar_upload.html")
+        try:
+            fa = FaceAnalysis(
+                file_path,
+                "/home/ubuntu/ai_service_project2/code/model/model.pth",
+                ["남주혁", "박보영", "서강준", "이승기"],
+            )
+            result, img_base64 = fa.analyze()
+        except ValueError:
+            return render_template("similar_upload.html", result="얼굴을 찾을 수 없습니다.")
+
+        return render_template('result.html', result=result, img_data=img_base64)    
+    return render_template("similar_upload.html") # for debugging
 
 
 @app.route("/detail")
