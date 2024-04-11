@@ -18,6 +18,7 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
     filename=datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S.log"),
+    encoding="utf-8",
 )
 
 # SSL 컨텍스트를 생성하고 설정합니다.
@@ -193,7 +194,10 @@ class AsyncImageDownloader:
             ) as session:
                 tasks = [
                     self.download_image(
-                        i, session, url, f"code/imgs/{self.search_for}_images"
+                        i,
+                        session,
+                        url,
+                        f"imgs/{self.search_for}_images",  # adjust path as needed
                     )
                     for i, url in enumerate(urls)
                 ]

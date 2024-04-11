@@ -1,7 +1,10 @@
 import cv2
 import numpy as np
+from flask import session
 from tensorflow.keras.models import load_model
 
+
+# TODO: reform this file
 
 class face_anlysis:
     def __init__(self, file_path):
@@ -45,6 +48,17 @@ class face_anlysis:
         predict_label = class_labels[predict_class_index]
 
         c_result = f"당신이 {predict_label}일 확률은 {round(pred[0][predict_class_index] * 100, 2)}% 입니다!"
+
+        # save result to db (face_analysis_results, example)
+
+        from app.module import dbModule
+        db = dbModule.Database()
+        cursor = db.cursor
+        sql = ("INSERT INTO face_analysis_results (num, userId, similar_face_result, similarity_percentage) values (0, "
+               "%s, %s, %s)")
+        cursor.execute(sql, (session["userId"], predict_label, round(pred[0][predict_class_index] * 100, 2)))
+        db.conn.commit()
+
         return c_result
 
     # def gender_detector(self):

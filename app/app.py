@@ -9,7 +9,7 @@ from flask import (
     jsonify,
 )
 from module import dbModule, faceModule
-import cv2
+
 
 app = Flask(__name__)
 
@@ -121,9 +121,40 @@ def similar_upload():
         return render_template("similar_upload.html")
 
 
-@app.route("/result", methods=["GET", "POST"])
+@app.route("/detail")
+def detail():
+    if session:
+        userId = session["userId"]
+        cursor = dbModule.Database().cursor
+        cursor.execute(
+            "SELECT * FROM face_analysis_results WHERE userId = %s", (userId)
+        )
+        result = cursor.fetchall()
+        return render_template("detail.html", result=result)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/result", methods=["GET"])
 def result():
     return render_template("result.html")
+
+
+@app.route("/history")
+def history(id):
+    return "wow such history much wow " + id
+
+
+@app.route("/delete_hist")
+def delete_hist(num):
+    userId = session["userId"]
+    cursor = dbModule.Database().cursor
+    cursor.execute(
+        "DELETE FROM face_analysis_results WHERE userId = %s AND num = %s",
+        (userId, num),
+    )
+    dbModule.Database().conn.commit()
+    return redirect(url_for("detail"))
 
 
 if __name__ == "__main__":
