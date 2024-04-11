@@ -31,26 +31,28 @@ class Database:
         try:
             with connection.cursor() as cursor:
                 # Create a new record
-                sql = """CREATE TABLE IF NOT EXISTS userInfo (
-                            num int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                            userId varchar(20) NOT NULL,
-                            userPw varchar(20) NOT NULL,
-                            userName varchar(8) NOT NULL,
-                            userGender varchar(2) DEFAULT NULL,
-                            signupTime timestamp NULL DEFAULT CURRENT_TIMESTAMP
-                        );
-                            
-                        CREATE TABLE IF NOT EXISTS face_analysis_results (
-                            num int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                            userId varchar(20) NOT NULL,
-                            similar_face_result varchar(255) DEFAULT NULL,
-                            similarity_percentage decimal(5,2) DEFAULT NULL,
-                            gender_result varchar(255) DEFAULT NULL,
-                            gender_percentage decimal(5,2) DEFAULT NULL,
-                            created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-                            CONSTRAINT fk_userId FOREIGN KEY (userId) REFERENCES userInfo(userId)
-                        );"""
-                cursor.execute(sql)
+                sql1 = """CREATE TABLE IF NOT EXISTS userInfo (
+                                        num int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                        userId varchar(20) NOT NULL,
+                                        userPw varchar(20) NOT NULL,
+                                        userName varchar(8) NOT NULL,
+                                        userGender varchar(2) DEFAULT NULL,
+                                        signupTime timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                                        KEY `idx_userId` (`userId`)
+                                    );"""
+                sql2 = """CREATE TABLE IF NOT EXISTS face_analysis_results (
+                                        num int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                        userId varchar(20) NOT NULL,
+                                        similar_face_result varchar(255) DEFAULT NULL,
+                                        similarity_percentage decimal(5,2) DEFAULT NULL,
+                                        gender_result varchar(255) DEFAULT NULL,
+                                        gender_percentage decimal(5,2) DEFAULT NULL,
+                                        created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                                        KEY `userId` (`userId`),
+                                        CONSTRAINT fk_userId FOREIGN KEY (userId) REFERENCES userInfo(userId)
+                                    );"""
+                cursor.execute(sql1)
+                cursor.execute(sql2)
 
             # Connection is not autocommit by default. So you must commit to save your changes.
             connection.commit()
