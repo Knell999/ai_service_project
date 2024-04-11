@@ -11,32 +11,49 @@
             <p class="text-white-50 mb-0">회원설명</p>
         </div>
     </header>
-    {% for i in range(1, 10) %}
-        <section class="py-5">
-        <div class="container my-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <h2>Engaging Background Images</h2>
-                    <p class="lead">The background images used in this template are sourced from Unsplash and are open
-                        source and free to use.</p>
-                    <p class="mb-0">I can't tell you how many people say they were turned off from science because of a
-                        science teacher that completely sucked out all the inspiration and enthusiasm they had for the
-                        course.</p>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
+
     <!-- Content section-->
     <section class="py-5">
         <div class="container my-5">
             <div class="row justify-content-center">
                 <div class="col-lg-6">
-                    <h2>할 말의 제목!!!!!!!</h2>
-                    <p class="lead">회원 정보와 어쩌구 기록들을 보여줄게ㅔ </p>
-                    <p class="mb-0">배고프다!!</p>
+                    <h2>회원 정보</h2>
+                    <p class="lead">회원 정보를 확인합니다.</p>
+                    <p class="mb-0">회원 정보는 회원의 얼굴을 분석하여 저장한 정보입니다.</p>
                 </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">회원 ID</th>
+                        <th scope="col">유사한 얼굴</th>
+                        <th scope="col">유사도</th>
+                        <th scope="col">생성일</th>
+                        <th scope="col">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in result %}
+                        <tr>
+                            <th scope="row">{{ r['num'] }}</th>
+                            <td>{{ r['userId'] }}</td>
+                            <td>{{ r['similar_face_result'] }}</td>
+                            <td>{{ r['similarity_percentage'] }}%</td>
+                            <td>{{ r['created_at'] }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger"
+                                        href="{{ url_for('delete_hist', userId=r['userId']) }}">삭제
+                                </button>
+                                <button type="button" class="btn btn-info"
+                                        href="{{ url_for('history', num=r['num']) }}">개입
+                                </button>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </section>
     <!-- Image element - set the background image for the header in the line below-->
     <div class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/4ulffa6qoKA/1200x800')">
