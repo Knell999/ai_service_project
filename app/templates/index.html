@@ -4,7 +4,7 @@
         <div class="container px-4 px-lg-5">
             <!-- Heading Row-->
             <div class="row gx-4 gx-lg-5 align-items-center my-5">
-                <div class="col-lg-7"><img class="img-fluid rounded mb-4 mb-lg-0" src={{ url_for('static', filename='img/similar1.jpg') }} alt="..."></div>
+                <div class="col-lg-7"><img class="img-fluid rounded mb-4 mb-lg-0" src="{{url_for('static', filename='img/similar1.jpg')}}" alt="similar1" /></div>
                 <div class="col-lg-5">
                     <h1 class="font-weight-light">나와 닮은 연예인은 누구?</h1>
                     <p>당신과 닮은 꼴 연예인을 찾아 볼 수 있어요! <br>이 페이지는 딥러닝을 통한 얼굴 인식 기술을 활용하여 <br>당신의 사진을 분석하고, 닮은 꼴로 판단되는 연예인을 찾아드려요!</p>
@@ -20,28 +20,31 @@
                 <div class="col-md-4 mb-5">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h2 class="card-title">나의 남성성, 여성성 확인</h2>
-                            <p class="card-text">나의 얼굴이 남성적인지, 여성적인지 그 수치는 어느정도인지 확인해보세요!</p>
+                            <h2 class="card-title">내 얼굴 성별 특징?</h2>
+                            <img src="{{url_for('static', filename='img/gender1.png')}}" height=50% width=70%  alt="..." >
+                            <p class="card-text">나의 얼굴이 남성적인지, 여성적인지 궁금하지 않으신가요?<br>그 수치는 어느정도인지까지 확인해보세요!</p>
+                        </div>
+                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="/gender_upload">지금 확인하기</a></div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title">내 얼굴의 노안도?</h2>
+                            <img src="{{url_for('static', filename='img/age1.png')}}" height=50% width=50%  alt="..." >
+                            <p class="card-text">나의 얼굴은 몇 살처럼 보일지 궁금하지 않으신가요?</p>
+                        </div>
+                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="/facialAge_upload">지금 확인하기</a></div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title">내 얼굴은 무슨 상?</h2>
+                            <img src="{{url_for('static', filename='img/animal1.png')}}" height=50% width=50%  alt="..." >
+                            <p class="card-text">나의 얼굴은 강아지상, 고양이상, 여우상, 늑대상 무엇인지 궁금하지 않으세요?</p>
                         </div>
                         <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">지금 확인하기</a></div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="card-title">아직 없음</h2>
-                            <p class="card-text">아직없음.</p>
-                        </div>
-                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">더보기</a></div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="card-title">아직 없음</h2>
-                            <p class="card-text">아직없음.</p>
-                        </div>
-                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">더보기</a></div>
                     </div>
                 </div>
             </div>

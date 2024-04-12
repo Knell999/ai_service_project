@@ -18,7 +18,6 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
     filename=datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S.log"),
-    encoding="utf-8",
 )
 
 # SSL 컨텍스트를 생성하고 설정합니다.
@@ -47,7 +46,7 @@ class AsyncImageDownloader:
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         }
-        self.scroll_amount = 10
+        self.scroll_amount = 5
 
         self.found_images = 0
         self.failed_gathers = 0
@@ -194,10 +193,7 @@ class AsyncImageDownloader:
             ) as session:
                 tasks = [
                     self.download_image(
-                        i,
-                        session,
-                        url,
-                        f"imgs/{self.search_for}_images",  # adjust path as needed (for vs code, code/imgs, for pycharm, imgs)
+                        i, session, url, f"code/imgs/{self.search_for}_images"
                     )
                     for i, url in enumerate(urls)
                 ]

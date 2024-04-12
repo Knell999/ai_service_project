@@ -3,17 +3,28 @@
 {% block content %}
 
     <div class="container my-5">
-        <h1 class="text-center mb-4">~~result title placeholder~~</h1>
+        <h3 class="text-center mb-4">당신과 닮은 연예인은?</h1>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5 class="card-title mb-4">{{ "당신이 {}일 확률은 {}% 입니다.".format(result[0][0], result[0][1]) }}</h5>
+                        <h5 class="card-title mb-4">{{ result['Celeb'] }}</h5>
                         <div class="mb-4">
-                            <img src="data:image/jpeg;base64,{{ img_data }}" class="img-fluid"/>
+                            <img src="{{image_url}}" alt="Placeholder"
+                                 class="celeb-image" height=50% width=70%>
                         </div>
+                        <p>{{result['Probability']}} %</p>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-secondary" onclick="location.href='/'">다시하기</button>
+                            <form id="myForm" action="/celeb_save" method="post">
+                                <input type="hidden" id="input_data" name="input_data" value="1">
+                                <button class="btn btn-primary"  type="submit">결과 저장</button>
+                            </form>
+                            <button class="btn btn-secondary" onclick="window.location.href='/celeb_save'">다시하기</button>
+                            {% if show_alert %}
+                            <script>
+                                alert("저장 성공: 저장이 완료되었습니다.");
+                            </script>
+                        {% endif %}
                         </div>
                     </div>
                 </div>
@@ -21,7 +32,7 @@
         </div>
     </div>
 
-    <h1>공사중!! (detail)</h1>
+
     <div class="card">
         <div class="card-header">
             <h4 class="text-center">Face Comparison</h4>
@@ -30,7 +41,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="text-center">
-                        <img src="{{ url_for('static', filename='placeholder.png') }}" alt="Placeholder"
+                        <img src="{{ url_for('static', filename='placeholder.jpg') }}" alt="Placeholder"
                              class="img-fluid">
                     </div>
                 </div>
@@ -61,8 +72,8 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <button class="btn btn-primary">Submit</button>
-            <button class="btn btn-secondary">Try Another</button>
+            <button class="btn btn-primary">결과 저장</button>
+            <button class="btn btn-secondary">다시하기</button>
         </div>
     </div>
 {% endblock %}

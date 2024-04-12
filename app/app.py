@@ -1,5 +1,3 @@
-import pathlib
-
 from flask import (
     Flask,
     request,
@@ -10,9 +8,8 @@ from flask import (
     session,
     jsonify,
 )
-from module import dbModule
-from module.faceModule import FaceAnalysis
-
+from module import dbModule, faceModule
+import cv2
 
 app = Flask(__name__)
 
@@ -28,7 +25,7 @@ def index():
         print(username)
         return render_template("index.html")
     else:
-        return render_template("index.html")
+        return render_template("loginorsignup.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -60,10 +57,37 @@ def login():
             return render_template("login.html")
     else:
         if session:  # 세션이 있을 경우 (로그인 되어 있을 경우)
-            return render_template("detail.html")
+            return redirect(url_for("detail"))
         else:
             return render_template("login.html")
 
+@app.route("/detail")
+def detail():
+    if session:
+        userId = session["userId"]
+        cursor = dbModule.Database().cursor
+        cursor.execute(
+            "SELECT * FROM face_analysis_results WHERE userId = %s", (userId)
+        )
+        result = cursor.fetchall()
+        return render_template("detail.html", result=result)
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/history")
+def history(id):
+    return "wow such history much wow " + id
+
+@app.route("/delete_hist")
+def delete_hist(num):
+    userId = session["userId"]
+    cursor = dbModule.Database().cursor
+    cursor.execute(
+        "DELETE FROM face_analysis_results WHERE userId = %s AND num = %s",
+        (userId, num),
+    )
+    dbModule.Database().conn.commit()
+    return redirect(url_for("detail"))
 
 # 로그아웃
 @app.route("/logout")
@@ -112,57 +136,83 @@ def similar_upload():
         if file.filename == "":
             return "No selected file"
 
-        file_path = "static/uploads/" + file.filename
+        file_path = "uploads/" + file.filename
         file.save(file_path)
 
-        try:
-            fa = FaceAnalysis(
-                file_path,
-                "/home/ubuntu/ai_service_project2/code/model/model.pth",
-                ["남주혁", "박보영", "서강준", "이승기"],
-            )
-            result, img_base64 = fa.analyze()
-        except ValueError:
-            return render_template("similar_upload.html", result="얼굴을 찾을 수 없습니다.")
+        fa = faceModule.face_anlysis(file_path)
+        result = fa.similar_face()
+        image_url = url_for('static', filename=f'img/celeb/{result["Celeb"]}.jpg')
+        session['celebImageUrl'] = image_url
+        session['celebAnalysis'] = result
 
-        return render_template('result.html', result=result, img_data=img_base64)    
-    return render_template("similar_upload.html") # for debugging
-
-
-@app.route("/detail")
-def detail():
-    if session:
-        userId = session["userId"]
-        cursor = dbModule.Database().cursor
-        cursor.execute(
-            "SELECT * FROM face_analysis_results WHERE userId = %s", (userId)
-        )
-        result = cursor.fetchall()
-        return render_template("detail.html", result=result)
+        return render_template('result.html', result = result, image_url=image_url)
     else:
-        return redirect(url_for("login"))
+        return render_template("similar_upload.html")
 
+@app.route("/celeb_save", methods=["GET", "POST"])
+def celeb_save():
+    if request.method == "POST":
+        celeb = session['celebAnalysis']
+        celebImageUrl = session['celebImageUrl'] 
+        userId = session['userId']
 
-@app.route("/result", methods=["GET"])
+        cursor = dbModule.Database().cursor
+        sql = 'INSERT INTO face_analysis_results (num, userId, similar_face_result, similarity_percentage) VALUES (0, %s, %s, %s)'
+        cursor.execute(sql, (userId, celeb['Celeb'], celeb['Probability']))
+        cursor.connection.commit()
+        show_alert = True
+        return render_template('result.html', result=celeb, show_alert = show_alert, image_url=celebImageUrl)
+    else:
+        del session['celebAnalysis']
+        del session['celebImageUrl']
+        
+        return render_template("similar_upload.html")
+    
+@app.route("/gender_save", methods=["GET", "POST"])
+def gender_save():
+    if request.method == "POST":
+        gender = session['genderAnalysis']
+        genderImageUrl = session['genderImageUrl'] 
+        userId = session['userId']
+
+        cursor = dbModule.Database().cursor
+        sql = 'INSERT INTO face_analysis_results (num, userId, gender_result, gender_percentage) VALUES (0, %s, %s, %s)'
+        cursor.execute(sql, (userId, gender['Gender'], gender['Probability']))
+        cursor.connection.commit()
+        show_alert = True
+        return render_template('gender_result.html', result=gender, show_alert = show_alert, image_url=genderImageUrl)
+    else:
+        del session['genderAnalysis']
+        del session['genderImageUrl']
+        
+        return render_template("gender_upload.html")
+    
+@app.route("/gender_upload", methods=["GET", "POST"])
+def gender_upload():
+    if request.method == "POST":
+        if "image" not in request.files:
+            return "No file part"
+        file = request.files["image"]
+        if file.filename == "":
+            return "No selected file"
+
+        file_path = "uploads/" + file.filename
+        file.save(file_path)
+
+        fa = faceModule.face_anlysis(file_path)
+        result = fa.gender_detector()
+        image_url = url_for('static', filename=f'img/gender/{result["Gender"]}.png')
+        session['genderImageUrl'] = image_url
+        session['genderAnalysis'] = result
+        username= session['username']
+        return render_template('gender_result.html', result = result, image_url=image_url)
+    else:
+        return render_template("gender_upload.html")
+
+@app.route("/result", methods=["GET", "POST"])
 def result():
+
     return render_template("result.html")
-
-
-@app.route("/history")
-def history(id):
-    return "wow such history much wow " + id
-
-
-@app.route("/delete_hist")
-def delete_hist(num):
-    userId = session["userId"]
-    cursor = dbModule.Database().cursor
-    cursor.execute(
-        "DELETE FROM face_analysis_results WHERE userId = %s AND num = %s",
-        (userId, num),
-    )
-    dbModule.Database().conn.commit()
-    return redirect(url_for("detail"))
 
 
 if __name__ == "__main__":
