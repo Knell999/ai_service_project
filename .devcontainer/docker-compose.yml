@@ -1,0 +1,14 @@
+services:
+  dev:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+
+  db:
+    image: mysql:latest
+    restart: always
+    network_mode: service:dev
+    environment:
+      MYSQL_ROOT_PASSWORD: '1791'
+      MYSQL_DATABASE: ai_servicedb

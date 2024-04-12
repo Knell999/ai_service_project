@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container my-5">
+        <h3 class="text-center mb-4">당신과 닮은 연예인은?</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-4">{{ result['Celeb'] }}</h5>
+                        <div class="mb-4">
+                            <img src="{{image_url}}" alt="Placeholder"
+                                 class="celeb-image" height=50% width=70%>
+                        </div>
+                        <p>{{result['Probability']}} %</p>
+                        <div class="btn-group">
+                            <form id="myForm" action="/celeb_save" method="post">
+                                <input type="hidden" id="input_data" name="input_data" value="1">
+                                <button class="btn btn-primary"  type="submit">결과 저장</button>
+                            </form>
+                            <button class="btn btn-secondary" onclick="window.location.href='/celeb_save'">다시하기</button>
+                            {% if show_alert %}
+                            <script>
+                                alert("저장 성공: 저장이 완료되었습니다.");
+                            </script>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-center">Face Comparison</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='placeholder.jpg') }}" alt="Placeholder"
+                             class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Similarity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Nose</td>
+                            <td>68%</td>
+                        </tr>
+                        <tr>
+                            <td>Mouth</td>
+                            <td>75%</td>
+                        </tr>
+                        <tr>
+                            <td>Eyes</td>
+                            <td>81%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button class="btn btn-primary">결과 저장</button>
+            <button class="btn btn-secondary">다시하기</button>
+        </div>
+    </div>
+{% endblock %}

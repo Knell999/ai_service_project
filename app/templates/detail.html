@@ -1,81 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Face World</title>
-        <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-    </head>
-    <body>
-        <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container px-5">
-                <a class="navbar-brand" href="/">Face World</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/login">
-                            {% if session %}
-                            {{session['username']}}님
-                            {% else %}
-                            로그인
-                            {% endif %}
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Header - set the background image for the header in the line below-->
-        <header class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
-            <div class="text-center my-5">
-                <img class="img-fluid rounded-circle mb-4" src="https://dummyimage.com/150x150/6c757d/dee2e6.jpg" alt="..." />
-                <h1 class="text-white fs-3 fw-bolder">{{session['username']}}님</h1>
-                <a href="/logout">임시 로그아웃</a>
-                <p class="text-white-50 mb-0">회원설명</p>
-            </div>
-        </header>
-        <!-- Content section-->
-        <section class="py-5">
-            <div class="container my-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6">
-                        <h2>할 말의 제목!!!!!!!</h2>
-                        <p class="lead">회원 정보와 어쩌구 기록들을 보여줄게ㅔ </p>
-                        <p class="mb-0">배고프다!!</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Image element - set the background image for the header in the line below-->
-        <div class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/4ulffa6qoKA/1200x800')">
-            <!-- Put anything you want here! The spacer below with inline CSS is just for demo purposes!-->
-            <div style="height: 20rem"></div>
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Header - set the background image for the header in the line below-->
+    <header class="py-5 bg-image-full"
+            style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
+        <div class="text-center my-5">
+            <img class="img-fluid rounded-circle mb-4" src="https://dummyimage.com/150x150/6c757d/dee2e6.jpg"
+                 alt="..."/>
+            <h1 class="text-white fs-3 fw-bolder">{{ session['username'] }}님</h1>
+            <a href="/logout">임시 로그아웃</a>
+            <p class="text-white-50 mb-0">회원설명</p>
         </div>
-        <!-- Content section-->
-        <section class="py-5">
-            <div class="container my-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6">
-                        <h2>Engaging Background Images</h2>
-                        <p class="lead">The background images used in this template are sourced from Unsplash and are open source and free to use.</p>
-                        <p class="mb-0">I can't tell you how many people say they were turned off from science because of a science teacher that completely sucked out all the inspiration and enthusiasm they had for the course.</p>
-                    </div>
+    </header>
+
+    <!-- Content section-->
+    <section class="py-5">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <h2>회원 정보</h2>
+                    <p class="lead">회원 정보를 확인합니다.</p>
+                    <p class="mb-0">회원 정보는 회원의 얼굴을 분석하여 저장한 정보입니다.</p>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">회원 ID</th>
+                        <th scope="col">유사한 얼굴</th>
+                        <th scope="col">유사도</th>
+                        <th scope="col">생성일</th>
+                        <th scope="col">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in result %}
+                        <tr>
+                            <th scope="row">{{ r['num'] }}</th>
+                            <td>{{ r['userId'] }}</td>
+                            <td>{{ r['similar_face_result'] }}</td>
+                            <td>{{ r['similarity_percentage'] }}%</td>
+                            <td>{{ r['created_at'] }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger"
+                                        href="{{ url_for('delete_hist', userId=r['userId']) }}">삭제
+                                </button>
+                                <button type="button" class="btn btn-info"
+                                        href="{{ url_for('history', num=r['num']) }}">개입
+                                </button>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+    <!-- Image element - set the background image for the header in the line below-->
+    <div class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/4ulffa6qoKA/1200x800')">
+        <!-- Put anything you want here! The spacer below with inline CSS is just for demo purposes!-->
+        <div style="height: 20rem"></div>
+    </div>
+    <!-- Content section-->
+    <section class="py-5">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <h2>Engaging Background Images</h2>
+                    <p class="lead">The background images used in this template are sourced from Unsplash and are open
+                        source and free to use.</p>
+                    <p class="mb-0">I can't tell you how many people say they were turned off from science because of a
+                        science teacher that completely sucked out all the inspiration and enthusiasm they had for the
+                        course.</p>
                 </div>
             </div>
-        </section>
-        <!-- Footer-->
-        <footer class="py-5 bg-dark">
-            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
-        </footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-    </body>
-</html>
+        </div>
+    </section>
+{% endblock %}
