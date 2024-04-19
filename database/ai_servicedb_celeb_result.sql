@@ -16,33 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userinfo`
+-- Table structure for table `celeb_result`
 --
 
-DROP TABLE IF EXISTS `userinfo`;
+DROP TABLE IF EXISTS `celeb_result`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userinfo` (
+CREATE TABLE `celeb_result` (
   `num` int NOT NULL AUTO_INCREMENT,
-  `userId` varchar(20) NOT NULL,
-  `userPw` varchar(20) NOT NULL,
-  `userName` varchar(8) NOT NULL,
-  `userAge` int NOT NULL,
-  `userGender` varchar(2) DEFAULT NULL,
-  `signupTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`num`),
-  KEY `idx_userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `userId` varchar(45) NOT NULL,
+  `celeb` varchar(45) NOT NULL,
+  `probability` decimal(4,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`num`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userinfo`
+-- Dumping data for table `celeb_result`
 --
 
-LOCK TABLES `userinfo` WRITE;
-/*!40000 ALTER TABLE `userinfo` DISABLE KEYS */;
-INSERT INTO `userinfo` VALUES (1,'9dongb','1234','구동빈',25,'m','2024-04-18 11:13:41');
-/*!40000 ALTER TABLE `userinfo` ENABLE KEYS */;
+LOCK TABLES `celeb_result` WRITE;
+/*!40000 ALTER TABLE `celeb_result` DISABLE KEYS */;
+INSERT INTO `celeb_result` VALUES (2,'9dongb','박보영',90.05,'2024-04-18 16:10:26'),(3,'9dongb','박보영',90.05,'2024-04-18 16:10:28'),(4,'9dongb','이승기',95.71,'2024-04-18 16:10:43'),(5,'9dongb','이승기',95.71,'2024-04-18 16:10:46');
+/*!40000 ALTER TABLE `celeb_result` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

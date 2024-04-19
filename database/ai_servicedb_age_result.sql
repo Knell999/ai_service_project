@@ -16,33 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userinfo`
+-- Table structure for table `age_result`
 --
 
-DROP TABLE IF EXISTS `userinfo`;
+DROP TABLE IF EXISTS `age_result`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userinfo` (
+CREATE TABLE `age_result` (
   `num` int NOT NULL AUTO_INCREMENT,
-  `userId` varchar(20) NOT NULL,
-  `userPw` varchar(20) NOT NULL,
-  `userName` varchar(8) NOT NULL,
-  `userAge` int NOT NULL,
-  `userGender` varchar(2) DEFAULT NULL,
-  `signupTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`num`),
-  KEY `idx_userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `userId` varchar(45) NOT NULL,
+  `age` varchar(45) NOT NULL,
+  `probability` decimal(4,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`num`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userinfo`
+-- Dumping data for table `age_result`
 --
 
-LOCK TABLES `userinfo` WRITE;
-/*!40000 ALTER TABLE `userinfo` DISABLE KEYS */;
-INSERT INTO `userinfo` VALUES (1,'9dongb','1234','구동빈',25,'m','2024-04-18 11:13:41');
-/*!40000 ALTER TABLE `userinfo` ENABLE KEYS */;
+LOCK TABLES `age_result` WRITE;
+/*!40000 ALTER TABLE `age_result` DISABLE KEYS */;
+INSERT INTO `age_result` VALUES (1,'9dongb','25~32',66.55,'2024-04-18 11:35:51'),(2,'9dongb','25~32',66.55,'2024-04-18 11:37:20'),(5,'9dongb','15~20',61.76,'2024-04-18 14:12:32'),(6,'9dongb','25~32',33.16,'2024-04-18 14:20:38'),(7,'9dongb','25~32',66.55,'2024-04-18 14:28:21'),(8,'9dongb','38~43',83.90,'2024-04-18 16:58:45');
+/*!40000 ALTER TABLE `age_result` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-19 10:30:57
+-- Dump completed on 2024-04-19 10:30:58

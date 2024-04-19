@@ -16,33 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userinfo`
+-- Table structure for table `face_analysis_results`
 --
 
-DROP TABLE IF EXISTS `userinfo`;
+DROP TABLE IF EXISTS `face_analysis_results`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userinfo` (
+CREATE TABLE `face_analysis_results` (
   `num` int NOT NULL AUTO_INCREMENT,
   `userId` varchar(20) NOT NULL,
-  `userPw` varchar(20) NOT NULL,
-  `userName` varchar(8) NOT NULL,
-  `userAge` int NOT NULL,
-  `userGender` varchar(2) DEFAULT NULL,
-  `signupTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `similar_face_result` varchar(255) DEFAULT NULL,
+  `similarity_percentage` decimal(5,2) DEFAULT NULL,
+  `gender_result` varchar(255) DEFAULT NULL,
+  `gender_percentage` decimal(5,2) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`num`),
-  KEY `idx_userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_userId` (`userId`),
+  CONSTRAINT `fk_userId` FOREIGN KEY (`userId`) REFERENCES `userinfo` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userinfo`
+-- Dumping data for table `face_analysis_results`
 --
 
-LOCK TABLES `userinfo` WRITE;
-/*!40000 ALTER TABLE `userinfo` DISABLE KEYS */;
-INSERT INTO `userinfo` VALUES (1,'9dongb','1234','구동빈',25,'m','2024-04-18 11:13:41');
-/*!40000 ALTER TABLE `userinfo` ENABLE KEYS */;
+LOCK TABLES `face_analysis_results` WRITE;
+/*!40000 ALTER TABLE `face_analysis_results` DISABLE KEYS */;
+/*!40000 ALTER TABLE `face_analysis_results` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

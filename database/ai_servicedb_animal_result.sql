@@ -16,33 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `userinfo`
+-- Table structure for table `animal_result`
 --
 
-DROP TABLE IF EXISTS `userinfo`;
+DROP TABLE IF EXISTS `animal_result`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `userinfo` (
+CREATE TABLE `animal_result` (
   `num` int NOT NULL AUTO_INCREMENT,
-  `userId` varchar(20) NOT NULL,
-  `userPw` varchar(20) NOT NULL,
-  `userName` varchar(8) NOT NULL,
-  `userAge` int NOT NULL,
-  `userGender` varchar(2) DEFAULT NULL,
-  `signupTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`num`),
-  KEY `idx_userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `userId` varchar(45) NOT NULL,
+  `animal` varchar(45) NOT NULL,
+  `probability` decimal(4,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`num`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `userinfo`
+-- Dumping data for table `animal_result`
 --
 
-LOCK TABLES `userinfo` WRITE;
-/*!40000 ALTER TABLE `userinfo` DISABLE KEYS */;
-INSERT INTO `userinfo` VALUES (1,'9dongb','1234','구동빈',25,'m','2024-04-18 11:13:41');
-/*!40000 ALTER TABLE `userinfo` ENABLE KEYS */;
+LOCK TABLES `animal_result` WRITE;
+/*!40000 ALTER TABLE `animal_result` DISABLE KEYS */;
+INSERT INTO `animal_result` VALUES (3,'9dongb','여우',56.26,'2024-04-16 12:53:43'),(4,'9dongb','여우',97.86,'2024-04-16 12:55:10'),(5,'9dongb','강아지',47.23,'2024-04-16 12:57:34');
+/*!40000 ALTER TABLE `animal_result` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-19 10:30:57
+-- Dump completed on 2024-04-19 10:30:58

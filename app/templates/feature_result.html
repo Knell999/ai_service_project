@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h3 class="text-center mb-4">{{ session['username'] }}님은 {{ gender_result['Gender'] }}성이 강하고 <br> {{ race_result['race'] }}의 특징과 유사한 얼굴이에요 ! </h3>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-4">{{ gender_result['Gender'] }}</h5>
+                    <div class="mb-4">
+                        <img src="{{gender_image_url}}" alt="Placeholder" class="celeb-image" height="35%" width="35%">
+                    </div>
+                    <p>{{ gender_result['Gender'] }}성 {{gender_result['Probability']}} %</p>
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-md-6 align-self-center">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-4">{{ race_result['race'] }}</h5>
+                    <div class="mb-4">
+                        <img src="{{race_image_url}}" alt="Placeholder" class="celeb-image" height="50%" width="50%">
+                    </div>
+                    <p>{{ race_result['race'] }} 특징 {{race_result['Probability']}}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-group d-flex justify-content-center">
+        <form id="myForm" action="/feature_save" method="post">
+            <input type="hidden" id="input_data" name="input_data" value="1">
+            <button class="btn btn-primary mr-2" type="submit">결과 저장</button>
+        </form>
+        <button class="btn btn-secondary" onclick="window.location.href='/feature_save'">다시 하기</button>
+    </div>
+    {% if show_alert %}
+    <script>
+        alert("저장 성공: 저장이 완료되었습니다.");
+    </script>
+    {% endif %}
+</div>
+{% endblock %}
