@@ -10,7 +10,7 @@ from flask import (
 )
 from module import dbModule, faceModule
 import cv2
-
+from module.crawlingModule import youtube
 app = Flask(__name__)
 
 app.secret_key = "TempMySessionKeywwwooososciuasdnsafdsf"
@@ -50,6 +50,7 @@ def login():
             session.clear()
             session["userId"] = account["userId"]
             session["username"] = account["userName"]
+            session['userAge'] = account['userAge']
             flash("로그인이 완료되었습니다.", "success")
             return redirect(url_for("index"))
         else:
@@ -67,16 +68,17 @@ def detail():
         userId = session["userId"]
         cursor = dbModule.Database().cursor
         cursor.execute(
-            "SELECT * FROM face_analysis_results WHERE userId = %s", (userId)
+            "SELECT * FROM userInfo WHERE userId = %s", (userId)
         )
-        result = cursor.fetchall()
+        result = cursor.fetchone()
+        session['signupTime'] = result['signupTime']
         return render_template("detail.html", result=result)
     else:
         return redirect(url_for("login"))
 
-@app.route("/history")
-def history(id):
-    return "wow such history much wow " + id
+# @app.route("/history")
+# def history(id):
+#     return "wow such history much wow " + id
 
 @app.route("/delete_hist")
 def delete_hist(num):
@@ -112,14 +114,15 @@ def signup():
 
         if existingUserId is None and signupUserPw == checkPw:
             username = request.form["username"]
+            userAge = request.form['userAge']
             userGender = request.form["userGender"]
 
-            sql = "INSERT INTO userInfo (num, userId, userPw, userName, userGender) values (0, %s, %s, %s, %s)"
+            sql = "INSERT INTO userInfo (num, userId, userPw, userName, userAge, userGender) values (0, %s, %s, %s, %s, %s)"
 
-            cursor.execute(sql, (signupUserId, signupUserPw, username, userGender))
+            cursor.execute(sql, (signupUserId, signupUserPw, username, userAge, userGender))
             db.conn.commit()
 
-            print(signupUserId, signupUserPw, checkPw, username, userGender)
+            print(signupUserId, signupUserPw, checkPw, username, userAge, userGender)
             return redirect(url_for("index"))
         else:
             return render_template("signup.html")
@@ -157,7 +160,7 @@ def celeb_save():
         userId = session['userId']
 
         cursor = dbModule.Database().cursor
-        sql = 'INSERT INTO face_analysis_results (num, userId, similar_face_result, similarity_percentage) VALUES (0, %s, %s, %s)'
+        sql = 'INSERT INTO celeb_result (num, userId, celeb, probability) VALUES (0, %s, %s, %s)'
         cursor.execute(sql, (userId, celeb['Celeb'], celeb['Probability']))
         cursor.connection.commit()
         show_alert = True
@@ -167,28 +170,9 @@ def celeb_save():
         del session['celebImageUrl']
         
         return render_template("similar_upload.html")
-    
-@app.route("/gender_save", methods=["GET", "POST"])
-def gender_save():
-    if request.method == "POST":
-        gender = session['genderAnalysis']
-        genderImageUrl = session['genderImageUrl'] 
-        userId = session['userId']
-
-        cursor = dbModule.Database().cursor
-        sql = 'INSERT INTO face_analysis_results (num, userId, gender_result, gender_percentage) VALUES (0, %s, %s, %s)'
-        cursor.execute(sql, (userId, gender['Gender'], gender['Probability']))
-        cursor.connection.commit()
-        show_alert = True
-        return render_template('gender_result.html', result=gender, show_alert = show_alert, image_url=genderImageUrl)
-    else:
-        del session['genderAnalysis']
-        del session['genderImageUrl']
-        
-        return render_template("gender_upload.html")
-    
-@app.route("/gender_upload", methods=["GET", "POST"])
-def gender_upload():
+#########################################################################################################################
+@app.route("/feature_upload", methods=["GET", "POST"])
+def feature_upload():
     if request.method == "POST":
         if "image" not in request.files:
             return "No file part"
@@ -200,19 +184,192 @@ def gender_upload():
         file.save(file_path)
 
         fa = faceModule.face_anlysis(file_path)
-        result = fa.gender_detector()
-        image_url = url_for('static', filename=f'img/gender/{result["Gender"]}.png')
-        session['genderImageUrl'] = image_url
-        session['genderAnalysis'] = result
-        username= session['username']
-        return render_template('gender_result.html', result = result, image_url=image_url)
+        gender_result = fa.gender_detector()
+        race_result = fa.race_detector()
+
+        gender_image_url = url_for('static', filename=f'img/gender/{gender_result["Gender"]}.png')
+        race_image_url = url_for('static', filename=f'img/race/{race_result["race"]}.png')
+        session['genderImageUrl'] = gender_image_url
+        session['genderAnalysis'] = gender_result
+
+        session['raceImageUrl'] = race_image_url
+        session['raceAnalysis'] = race_result
+
+        return render_template('feature_result.html', gender_result = gender_result, race_result=race_result, gender_image_url=gender_image_url, race_image_url=race_image_url)
     else:
-        return render_template("gender_upload.html")
+        return render_template("feature_upload.html")
+    
+@app.route("/feature_save", methods=["GET", "POST"])
+def feature_save():
+    if request.method == "POST":
+        gender = session['genderAnalysis']
+        genderImageUrl = session['genderImageUrl'] 
+        race = session['raceAnalysis']
+        raceImageUrl = session['raceImageUrl']
+
+        userId = session['userId']
+
+        cursor = dbModule.Database().cursor
+        sql = 'INSERT INTO feature_result (num, userId, gender, gender_probability, race, race_probability) VALUES (0, %s, %s, %s, %s, %s)'
+        cursor.execute(sql, (userId, gender['Gender'], gender['Probability'], race['race'], race['Probability']))
+        cursor.connection.commit()
+        show_alert = True
+        return render_template('feature_result.html', gender_result=gender, race_result=race, show_alert = show_alert, gender_image_url=genderImageUrl, race_image_url=raceImageUrl)
+    else:
+        del session['genderAnalysis']
+        del session['genderImageUrl']
+        
+        return render_template("feature_upload.html")
+#########################################################################################################################
+@app.route("/age_upload", methods=["GET", "POST"])
+def age_upload():
+    if request.method == "POST":
+        if "image" not in request.files:
+            return "No file part"
+        file = request.files["image"]
+        if file.filename == "":
+            return "No selected file"
+
+        file_path = "uploads/" + file.filename
+        file.save(file_path)
+
+        fa = faceModule.face_anlysis(file_path)
+        age_result = fa.age_detector()
+
+        age_image_url = url_for('static', filename=f'img/age/age.png')
+
+        session['ageImageUrl'] = age_image_url
+        session['ageAnalysis'] = age_result
+
+        age = age_result['age'].split('~')
+        print(age)
+        print(range(int(age[0]), int(age[1])))
+        
+        msg = ''
+        keyword = ''
+        if int(session['userAge']) in range(int(age[0]), int(age[1])):
+            # 나이에 맞을 경우
+            keyword = '피부 나이 유지 방법'
+        elif int(session['userAge']) < int(age[0]) or int(session['userAge']) < int(age[1]):
+            # 노안일 경우
+            keyword = '안티에이징'
+        else:
+            # 동안일 경우
+            keyword = '성숙해보이는 메이크업'
+    
+        video_info = youtube(keyword)
+        session['video_info'] = video_info
+
+        return render_template('age_result.html', result = age_result, image_url=age_image_url, keyword=keyword)
+    else:
+        return render_template("age_upload.html")
+    
+@app.route("/age_save", methods=["GET", "POST"])
+def age_save():
+    if request.method == "POST":
+        age = session['ageAnalysis']
+        ageImageUrl = session['ageImageUrl'] 
+        userId = session['userId']
+
+        cursor = dbModule.Database().cursor
+        sql = 'INSERT INTO age_result (num, userId, age, probability) VALUES (0, %s, %s, %s)'
+        cursor.execute(sql, (userId, age['age'], age['Probability']))
+        cursor.connection.commit()
+        show_alert = True
+        return render_template('age_result.html', result=age, show_alert = show_alert, image_url=ageImageUrl )
+    else:
+        del session['ageAnalysis']
+        del session['ageImageUrl']
+        del session['video_info']
+        
+        return render_template("age_upload.html")
+#########################################################################################################################
+@app.route("/animal_upload", methods=["GET", "POST"])
+def animal_upload():
+    if request.method == "POST":
+        if "image" not in request.files:
+            return "No file part"
+        file = request.files["image"]
+        if file.filename == "":
+            return "No selected file"
+
+        file_path = "uploads/" + file.filename
+        file.save(file_path)
+
+        fa = faceModule.face_anlysis(file_path)
+        result = fa.animal_detector()
+        image_url = url_for('static', filename=f'img/animal/{result["animal"]}.jpg')
+        session['animalImageUrl'] = image_url
+        session['animalAnalysis'] = result
+
+        return render_template('animal_result.html', result = result, image_url=image_url)
+    else:
+        return render_template("animal_upload.html")
+    
+@app.route("/animal_save", methods=["GET", "POST"])
+def animal_save():
+    if request.method == "POST":
+        animal = session['animalAnalysis']
+        animalImageUrl = session['animalImageUrl'] 
+        userId = session['userId']
+
+        cursor = dbModule.Database().cursor
+        sql = 'INSERT INTO animal_result (num, userId, animal, probability) VALUES (0, %s, %s, %s)'
+        cursor.execute(sql, (userId, animal['animal'], animal['Probability']))
+        cursor.connection.commit()
+        show_alert = True
+        return render_template('animal_result.html', result=animal, show_alert = show_alert, image_url=animalImageUrl)
+    else:
+        del session['animalAnalysis']
+        del session['animalImageUrl']
+        
+        return render_template("feature_upload.html")
+#########################################################################################################################
+
+@app.route('/history', methods=["GET", "POST"])
+def history():
+    param = request.args.get('param')
+    if session:
+        userId = session["userId"]
+        cursor = dbModule.Database().cursor
+        cursor.execute(
+            f"SELECT * FROM {param}_result WHERE userId = %s", (userId)
+        )
+        result = cursor.fetchall()
+
+        s = ['닮은 꼴 연예인', '유사한 얼굴', '유사도']
+        am = ['닮은 동물상', '닮은 동물', '유사도']
+        a = ['노안도', '예상 나이', '확률']
+        f = ['얼굴 특징', '성별', '성별 확률', '인종', '유사도']
+        h_info = {'celeb':s, 'animal': am, 'age':a, 'feature':f}
+        session['h_info'] =h_info
+        session['result'] = result
+        return render_template("history.html", result=result, h_info=h_info[param], param=param)
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/del_history', methods=["GET", "POST"])
+def del_history():
+    param =request.args.get('param')
+    num = request.args.get('num')
+    print(param)
+
+    userId = session["userId"]
+    db = dbModule.Database()
+    cursor = db.cursor
+    sql = f"DELETE FROM {param}_result WHERE num = %s AND userId = %s"
+    cursor.execute(sql, (num, userId))
+    db.conn.commit()
+
+    cursor.execute(f"SELECT * FROM {param}_result WHERE userId = %s", (userId))
+    session['result'] = cursor.fetchall()
+    return render_template("history.html", param=param, h_info=session['h_info'][param])
+
 
 @app.route("/result", methods=["GET", "POST"])
 def result():
 
-    return render_template("result.html")
+    return render_template("animal_result.html")
 
 
 if __name__ == "__main__":
