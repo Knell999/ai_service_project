@@ -7,8 +7,8 @@
             <img class="img-fluid rounded-circle mb-4" src="https://dummyimage.com/150x150/6c757d/dee2e6.jpg"
                  alt="..."/>
             <h1 class="text-white fs-3 fw-bolder">{{ session['username'] }}님</h1>
-            <a href="/logout">임시 로그아웃</a>
-            <p class="text-white-50 mb-0">회원설명</p>
+            <a href="/logout">로그아웃</a>
+            <p class="text-white-50 mb-0">가입일: {{result['signupTime']}}</p>
         </div>
     </header>
 
@@ -16,55 +16,29 @@
     <section class="py-5">
         <div class="container my-5">
             <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <h2>회원 정보</h2>
-                    <p class="lead">회원 정보를 확인합니다.</p>
-                    <p class="mb-0">회원 정보는 회원의 얼굴을 분석하여 저장한 정보입니다.</p>
+                <div class="col-lg-6 text-center">
+                    <h2>History</h2>
+                    <p class="lead">서비스 이용 내역 조회</p>
                 </div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">회원 ID</th>
-                        <th scope="col">유사한 얼굴</th>
-                        <th scope="col">유사도</th>
-                        <th scope="col">생성일</th>
-                        <th scope="col">action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for r in result %}
-                        <tr>
-                            <th scope="row">{{ r['num'] }}</th>
-                            <td>{{ r['userId'] }}</td>
-                            <td>{{ r['similar_face_result'] }}</td>
-                            <td>{{ r['similarity_percentage'] }}%</td>
-                            <td>{{ r['created_at'] }}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger"
-                                        href="{{ url_for('delete_hist', userId=r['userId']) }}">삭제
-                                </button>
-                                <button type="button" class="btn btn-info"
-                                        href="{{ url_for('history', num=r['num']) }}">개입
-                                </button>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <!-- 히스토리 버튼 4개 -->
+                    <div class="btn-group">
+                        <a href="{{ url_for('history', param='celeb') }}" class="btn btn-primary">닮은 꼴 연예인</a>
+                        <a href="{{ url_for('history', param='feature') }}" class="btn btn-primary">얼굴 특징</a>
+                        <a href="{{ url_for('history', param='age') }}" class="btn btn-primary">노안도</a>
+                        <a href="{{ url_for('history', param='animal') }}" class="btn btn-primary">동물상</a>
+                    </div>
+                </div>
             </div>
         </div>
-
     </section>
-    <!-- Image element - set the background image for the header in the line below-->
-    <div class="py-5 bg-image-full" style="background-image: url('https://source.unsplash.com/4ulffa6qoKA/1200x800')">
-        <!-- Put anything you want here! The spacer below with inline CSS is just for demo purposes!-->
-        <div style="height: 20rem"></div>
-    </div>
     <!-- Content section-->
-    <section class="py-5">
+    <!-- <section class="py-5">
         <div class="container my-5">
             <div class="row justify-content-center">
-                <div class="col-lg-6">
+                <div class="col-lg-6 text-center">
                     <h2>Engaging Background Images</h2>
                     <p class="lead">The background images used in this template are sourced from Unsplash and are open
                         source and free to use.</p>
@@ -74,5 +48,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
+
+
 {% endblock %}
