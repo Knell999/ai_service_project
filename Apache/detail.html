@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+</head>
+<body>
+<script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        // 세션에서 사용자 이름 가져오기
+        const userName = sessionStorage.getItem('userName');
+        const createdAt = sessionStorage.getItem('createdAt');
+        
+        const n = document.getElementById('un');
+        n.textContent = userName+"님";
+
+        const ca = document.getElementById('ca');
+        ca.textContent = "가입일: " + createdAt
+    
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+        // 세션 정보가 없으면 로그인 필요 메시지 출력
+        const login = document.getElementById('login');
+        }
+
+        userImageString = sessionStorage.getItem('img'); 
+        userImage = JSON.parse(userImageString);
+        if (userImage){
+            document.querySelector('.img-fluid').src = userImage.img
+        }
+        const defaultImage = 'https://dummyimage.com/150x150/6c757d/dee2e6.jpg'
+        document.querySelector('.img-fluid').src = defaultImage; // 기본 프로필 이미지
+
+
+
+        document.getElementById('editProfile').addEventListener('click', function () {
+        document.getElementById('fileInput').click();});
+
+
+    // 파일 선택 시 이미지 미리보기 및 업로드
+    document.getElementById('fileInput').addEventListener('change', function () {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                // 이미지 미리보기 업데이트
+                document.getElementById('profileImage').src = e.target.result;
+
+                // 이미지 업로드
+                uploadImage(file);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+// 이미지를 Flask에 업로드하는 함수
+function uploadImage(file) {
+    var formData = new FormData();
+    formData.append('profileImage', file);
+
+    fetch('http://127.0.0.1:5000/uploadProfile', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            console.log(data.img);
+            sessionStorage.setItem('img', JSON.stringify(data)); 
+            
+        })
+    .catch(function(error) {
+        console.error('There was a problem with the upload:', error);
+    });
+}
+    function callLogout() {
+        // 로그아웃 API 호출 (비동기 방식)
+        fetch('http://127.0.0.1:5000/logout')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            // 세션에서 사용자 이름 제거
+            sessionStorage.clear();
+
+            alert("로그아웃 되었습니다!");
+            // 페이지 새로고침
+            window.location.href = 'index.html';
+            
+            } else {
+            // 로그아웃 실패 처리
+            console.error('로그아웃 실패!');
+            }
+        });
+        // 기본 동작 취소 (링크 이동 방지)
+        return false;
+        }
+
+    function callHistory(history){
+        var obj = {'param':history}
+        // POST 데이터를 보낼 url
+        fetch('http://127.0.0.1:5000/history', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(obj),
+            credentials: 'include' // 세션 쿠키를 포함하여 요청 전송
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                    alert("정보를 불러왔습니다!");
+                    console.log(data);
+
+                    sessionStorage.setItem('result', JSON.stringify(data)); // 사용자 이름을 sessionStorage에 저장
+                    window.location.href = 'history.html';
+                
+            } else {
+                alert("정보를 불러오지 못했습니다.");
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+
+
+
+    </script>
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+
+                <!-- <li class="nav-item"><a class="nav-link" href="/login.html">로그인</a></li> -->
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+    <!-- Header - set the background image for the header in the line below-->
+    <header class="py-5 bg-image-full"
+            style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
+        <div class="text-center my-5">
+            <img id="profileImage" width="150px" height="150px" class="img-fluid rounded-circle mb-4" alt="..."/>
+            <h1 class="text-white fs-3 fw-bolder" id="un"></h1>
+
+            <!-- 이미지 업로드를 위한 input 요소 -->
+            <input type="file" id="fileInput" style="display:none;">
+            <a style="text-decoration: underline; color:slateblue;" id="editProfile" onclick="fileInput">프로필 수정</a>
+            <a style="text-decoration: underline; color:red;" id="logout" onclick="callLogout()">로그아웃</a>
+
+            <p class="text-white-50 mb-0" id="ca"></p>
+        </div>
+    </header>
+
+    <!-- Content section-->
+    <section class="py-5">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <h2>History</h2>
+                    <p class="lead">서비스 이용 내역 조회</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <!-- 히스토리 버튼 4개 -->
+                    <div class="btn-group">
+                        <a id="celebButton" onclick="callHistory('celeb')" class="btn btn-primary">닮은 꼴 연예인</a>
+                        <a id="feature" onclick="callHistory('feature')"  class="btn btn-primary">얼굴 특징</a>
+                        <a id="ageButton" onclick="callHistory('age')"  class="btn btn-primary">노안도</a>
+                        <a id="animalButton" onclick="callHistory('animal')" class="btn btn-primary">동물상</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Content section-->
+    <!-- <section class="py-5">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <h2>Engaging Background Images</h2>
+                    <p class="lead">The background images used in this template are sourced from Unsplash and are open
+                        source and free to use.</p>
+                    <p class="mb-0">I can't tell you how many people say they were turned off from science because of a
+                        science teacher that completely sucked out all the inspiration and enthusiasm they had for the
+                        course.</p>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+</head>
+<body>
+<script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        // 세션에서 사용자 이름 가져오기
+        const userName = sessionStorage.getItem('userName');
+        const createdAt = sessionStorage.getItem('createdAt');
+        
+        const n = document.getElementById('un');
+        n.textContent = userName+"님";
+
+        const ca = document.getElementById('ca');
+        ca.textContent = "가입일: " + createdAt
+
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+            alert('로그인 후 이용해주세요.')
+            window.location.href = 'login.html';
+        }
+        
+    });
+
+    </script>
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+
+                <!-- <li class="nav-item"><a class="nav-link" href="/login.html">로그인</a></li> -->
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+<script>
+    const resultString = sessionStorage.getItem('result');
+    const result = JSON.parse(resultString)
+    console.log(result);
+    const rl =  result.result;
+    const param = result.param;
+    console.log(result.h_info[0]);
+    
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const what = document.getElementById('what');
+        what.textContent = '서비스 이용 내역 조회 ('+result.h_info[0]+')';
+        
+        // JavaScript 코드
+        var historyTable = document.getElementById('historyTable');
+
+        if (historyTable) {
+            // 테이블이 존재하는 경우
+            var tbody = historyTable.querySelector('tbody');
+            if (tbody) {
+                // tbody가 존재하는 경우
+                rl.forEach(function(data) {
+                    // 데이터 수만큼 반복하여 행 추가
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <th scope="row">${data['num']}</th>
+                        <td>${data['userId']}</td>
+                        <td>${data[param]}</td>
+                        <td>${data['probability']}%</td>
+                        <td>${data['created_at']}</td>
+                        <a class="btn btn-danger" onclick="callHistoryDel(${data['num']})">삭제</a>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                console.error("tbody 요소를 찾을 수 없습니다.");
+            }
+        } else {
+            console.error("historyTable 요소를 찾을 수 없습니다.");
+        }
+    });
+
+
+    function callLogout() {
+        // 로그아웃 API 호출 (비동기 방식)
+        fetch('http://127.0.0.1:5000/logout')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            // 세션에서 사용자 이름 제거
+            sessionStorage.clear();
+
+            alert("로그아웃 되었습니다!");
+            // 페이지 새로고침
+            window.location.href = 'index.html';
+            
+            } else {
+            // 로그아웃 실패 처리
+            console.error('로그아웃 실패!');
+            }
+        });
+        // 기본 동작 취소 (링크 이동 방지)
+        return false;
+        }
+
+        function callHistoryDel(tnum) {
+
+        const obj = {'param':param, 'num':tnum}
+        
+        fetch('http://127.0.0.1:5000/del_history', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(obj),
+            credentials: 'include' 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            // 세션에서 사용자 이름 제거
+
+
+            alert("삭제 되었습니다!");
+            // 페이지 새로고침
+            window.location = 'detail.html';
+            
+            } else {
+            // 로그아웃 실패 처리
+            console.error('로그아웃 실패!');
+            }
+        });
+        // 기본 동작 취소 (링크 이동 방지)
+        return false;
+        }
+
+</script>
+    <!-- Header - set the background image for the header in the line below-->
+    <header class="py-5 bg-image-full"
+            style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1600x900')">
+        <div class="text-center my-5">
+            <img class="img-fluid rounded-circle mb-4" src="https://dummyimage.com/150x150/6c757d/dee2e6.jpg"
+                 alt="..."/>
+            <h1 class="text-white fs-3 fw-bolder" id="un"></h1>
+            <a style="text-decoration: underline; color:red;" id="logout" onclick="callLogout()">로그아웃</a>
+            <p class="text-white-50 mb-0" id="ca">가입일:</p>
+        </div>
+    </header>
+    <!-- Content section-->
+    <section class="py-5">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <h2>History</h2>
+                    <p class="lead" id="what" >서비스 이용 내역 조회</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+
+                        <table class="table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">회원 ID</th>
+                                    <th scope="col">닮은 꼴</th>
+                                    <th scope="col">유사도</th>
+                                    <th scope="col">생성일</th>
+                                    <th scope="col">action</th>
+                                </tr>
+                            </thead>
+   
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+</body>
+</html>
+

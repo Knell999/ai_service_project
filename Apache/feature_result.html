@@ -1,0 +1,166 @@
+
+<!-- {# used FastBootstrap by atlassian #} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+</head>
+<body>
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        const userName = sessionStorage.getItem('userName');
+    
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+        // 세션 정보가 없으면 로그인 필요 메시지 출력
+        // const login = document.getElementById('login');
+        }
+//////////////////////////////////////////////////////////////////////
+        // 세션에서 사용자 이름 가져오기
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        console.log(result);
+        
+        const resultGender = result.gender_result.Gender;
+        const resultGenderProbability = result.gender_result.Probability;
+
+        const resultRace= result.race_result.race;
+        const resultRaceProbability = result.race_result.Probability;
+
+        console.log(resultGender, resultRace);
+
+        if (result) {
+        const genderElement = document.getElementById('genderElement');
+        const genderTextElement = document.getElementById('genderText');
+
+        const raceElement = document.getElementById('raceElement');
+        const raceTextElement = document.getElementById('raceText');
+ 
+    
+        genderElement.textContent = resultGender;
+        raceElement.textContent = resultRace;
+        
+        firstLine.innerHTML  = resultGender+'성이 강하고 <br>'+ resultRace + '의 특징과 유사한 얼굴이에요 !';
+
+        genderTextElement.textContent = resultGender+'성 '+resultGenderProbability+'%'
+        raceTextElement.textContent = resultRace+' 특징 '+resultRaceProbability+'%'
+        
+
+        genderImage.src = result.img.gender
+        raceImage.src = result.img.race
+        }
+    });
+
+    function callSave() {
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        fetch('http://127.0.0.1:5000/feature_save', {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(result),
+            credentials: 'include'})
+        .then(response => response.json())
+        .then(data => {
+            if (data.success){
+                console.log(data);
+                alert('저장 완료!')
+            }
+            else{
+                alert('저장 실패')
+            }
+        })
+        .catch(error => {
+            // 에러 발생
+            console.error('Error:', error);
+        });
+    }
+
+
+    </script>
+<!-- Page content-->
+<!-- <span class="badge text-bg-danger">{{ result }}</span> -->
+<div class="container my-5">
+    <h3 class="text-center mb-4" id="firstLine"></h3>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-4" id="genderElement"></h5>
+                    <div class="mb-4">
+                        <img id="genderImage" alt="Placeholder" class="celeb-image" height="35%" width="35%">
+                    </div>
+                    <p id="genderText"></p>
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-md-6 align-self-center">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-4" id="raceElement"></h5>
+                    <div class="mb-4">
+                        <img id="raceImage" alt="Placeholder" class="celeb-image" height="50%" width="50%">
+                    </div>
+                    <p id="raceText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-group d-flex justify-content-center">
+        <form id="myForm" method="post">
+            <input type="hidden" id="input_data" name="input_data" value="1">
+            <button class="btn btn-primary mr-2" type="button" onclick="callSave()">결과 저장</button>
+        </form>
+        <button class="btn btn-secondary" onclick="window.location.href='feature_upload.html'">다시 하기</button>
+    </div>
+
+</div>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+
+</body>
+</html>
