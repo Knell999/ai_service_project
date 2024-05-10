@@ -1,0 +1,180 @@
+
+<!-- {# used FastBootstrap by atlassian #} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+</head>
+<body>
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page content-->
+<!-- <span class="badge text-bg-danger">{{ result }}</span> -->
+
+<header class="py-5">
+    <div class="container px-lg-5">
+        <div class="dropzone p-4 p-lg-5 rounded-3 text-center">
+            <div class="m-4 m-lg-5">
+                <h1 class="display-5 fw-bold">사진 업로드</h1>
+                <p class="fs-4">이 곳에 사진을 끌어오거나 업로드 버튼을 누르세요.</p>
+
+                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                    <div class="rounded-3 text-center p-5 mb-4">
+                        <div class="dz-message">
+                            <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                        </div>
+                    </div>
+
+                    <p id="filename" class="fs-5"></p>
+
+                    <label class="btn btn-outline-warning" for="fileInput">
+                        선택</label>
+                    <input class="file" id="fileInput" name="image" type="file" style="display: none;">
+
+                    <!-- 자동 제출 버튼 -->
+                    <button id='submitButton' type="button" class="btn btn-outline-success">
+                        <span class="icon text-success-emphasis">
+                            <i class="fas fa-upload"></i>
+                        </span>제출
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        // 세션에서 사용자 이름 가져오기
+        const userName = sessionStorage.getItem('userName');
+    
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+        // 세션 정보가 없으면 로그인 필요 메시지 출력
+        // const login = document.getElementById('login');
+        }
+    });
+
+    // simple script for drag and drop
+    const dropzone = document.querySelector('.dropzone');
+    const fileInput = document.getElementById('fileInput');
+
+    // Handle file input change event (by clicking the button)
+    document.getElementById('fileInput').addEventListener('change', function (e) {
+        handleFiles(e.target.files);
+    });
+
+    // Prevent default behavior for drag and drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight the dropzone when dragging over it
+    ['dragover', 'dragenter'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+            dropzone.classList.add('border', 'border-dashed', 'border-secondary')
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+            dropzone.classList.remove('border', 'border-dashed', 'border-secondary')
+        }, false);
+    });
+
+    // Handle dropped files (by dragging and dropping)
+    dropzone.addEventListener('drop', handleDrop, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function handleDrop(e) {
+        dropzone.classList.remove('bg-secondary');
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        fileInput.files = files;
+        document.getElementById('filename').innerText = files[0].name;
+    }
+
+///////////////////////////////////////
+    // 제출 버튼 클릭 이벤트 처리
+    document.getElementById("submitButton").addEventListener("click", function() {
+        var form = document.getElementById("uploadForm");
+        var formData = new FormData(form);
+
+
+        // 서버 URL 설정
+        var url = "http://127.0.0.1:5000/feature_upload";
+
+        // 서버로 데이터 전송
+        fetch(url, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // 서버 응답 로그
+            // // 받은 데이터를 사용하여 새로운 URL 생성
+
+            sessionStorage.setItem('result', JSON.stringify(data));
+
+            // 사용자를 새로운 페이지로 리디렉션
+            window.location.href = 'feature_result.html';
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+</script>
+
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+
+</body>
+</html>

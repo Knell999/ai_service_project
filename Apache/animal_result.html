@@ -1,0 +1,187 @@
+
+<!-- {# used FastBootstrap by atlassian #} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+</head>
+<body>
+    <script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        const userName = sessionStorage.getItem('userName');
+    
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+        // 세션 정보가 없으면 로그인 필요 메시지 출력
+        // const login = document.getElementById('login');
+        }
+
+        // 세션에서 사용자 이름 가져오기
+        
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        console.log(result);
+        
+        const resultKey = result.data.animal;
+        const resultProb = result.data.Probability;
+
+        console.log(resultKey, resultProb);
+
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (result) {
+        const celebNameElement = document.getElementById('celebNameElement');
+        const celebPercentageElement = document.getElementById('celebPercentageElement');
+        const image = document.getElementById('image');
+    
+        celebNameElement.textContent = resultKey;
+        celebPercentageElement.textContent = '당신은 '+resultProb+'% 정도 '+resultKey+'를 닮았어요!';
+        image.src = result.img
+        }
+    });
+
+    function callSave() {
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        fetch('http://127.0.0.1:5000/animal_save', {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(result),
+            credentials: 'include'})
+        .then(response => response.json())
+        .then(data => {
+            if (data.success){
+                console.log(data);
+                alert('저장 완료!')
+            }
+            else{
+                alert('저장 실패')
+            }
+        })
+        .catch(error => {
+            // 에러 발생
+            console.error('Error:', error);
+        });
+    }
+
+
+    </script>
+
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+    <div class="container my-5">
+        <h3 class="text-center mb-4">당신과 닮은 동물 얼굴상은?</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-4" id="celebNameElement"></h5>
+                        <div class="mb-4">
+                            <img id="image" alt="Placeholder"
+                                 class="celeb-image" height=50% width=70%>
+                        </div>
+                        <p id="celebPercentageElement">{{result['Probability']}} %</p>
+                        <div class="btn-group">
+                            <form id="myForm" method="post">
+                                <input type="hidden" id="input_data" name="input_data" value="1">
+                                <button class="btn btn-primary"  type="button" onclick="callSave()">결과 저장</button>
+                            </form>
+                            <button class="btn btn-secondary" onclick="window.location.href='animal_upload.html'">다시하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-center">Face Comparison</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='placeholder.jpg') }}" alt="Placeholder"
+                             class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Similarity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Nose</td>
+                            <td>68%</td>
+                        </tr>
+                        <tr>
+                            <td>Mouth</td>
+                            <td>75%</td>
+                        </tr>
+                        <tr>
+                            <td>Eyes</td>
+                            <td>81%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button class="btn btn-primary">결과 저장</button>
+            <button class="btn btn-secondary">다시하기</button>
+        </div>
+    </div> -->
+
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+
+</body>
+</html>

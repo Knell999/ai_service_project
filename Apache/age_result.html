@@ -1,0 +1,203 @@
+
+<!-- {# used FastBootstrap by atlassian #} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Face World</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/fastbootstrap.css" rel="stylesheet"/>
+
+    <!-- Font Awesome icons (free version)-->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+</head>
+<body>
+    <script>
+    // DOMContentLoaded 이벤트 발생 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        const userName = sessionStorage.getItem('userName');
+    
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (userName) {
+        const userNameElement = document.getElementById('userNameElement');
+        const loginElement = document.getElementById('loginElement');
+        userNameElement.textContent = userName;
+        if (loginElement){
+            loginElement.style.display = 'none';
+        }
+        } else {
+        // 세션 정보가 없으면 로그인 필요 메시지 출력
+        // const login = document.getElementById('login');
+        }
+
+
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        console.log(result);
+        
+        const resultKey = result.data.age;
+        const resultValue = result.data.Probability;
+
+        const vifl = result.session.video_info.link
+        const vvift = result.session.video_info.thumnail
+        const vviftt = result.session.video_info.title
+        const kwd = result.keyword
+        console.log(vifl[0]);
+
+        // 사용자 이름이 존재하면 HTML에 표시
+        if (result) {
+        const ageElement = document.getElementById('ageElement');
+        const celebPercentageElement = document.getElementById('celebPercentageElement');
+        const image = document.getElementById('image');
+        const firstLine = document.getElementById('firstLine');
+        const secondLine = document.getElementById('secondLine');
+
+        const link = document.getElementById('link');
+        const thumnail = document.getElementById('thumnail');
+        const title = document.getElementById('title');
+        const keyword = document.getElementById('keyword');
+        
+        
+        const link2 = document.getElementById('link2');
+        const thumnail2 = document.getElementById('thumnail2');
+        const title2 = document.getElementById('title2');
+        
+
+        link.href = vifl[0];
+        thumnail.src = vvift[0];
+        title.textContent = vviftt[0];
+        keyword.textContent = "추천 동영상 (" + kwd +")";
+
+        link2.href = vifl[1];
+        thumnail2.src = vvift[1];
+        title2.textContent = vviftt[0];
+    
+        firstLine.textContent = userName+'님은'+ resultKey+ '세 정도의 얼굴이에요'
+        secondLine.textContent = resultKey+'세의 얼굴을 가졌을 확률이 '+ resultValue+'% 에요!'
+        // {{ session['username'] }}님은 {{ result['age'] }}세 정도의 얼굴이에요 ! 
+    
+        ageElement.textContent = resultKey+'세';
+        celebPercentageElement.textContent = resultValue+'%';
+        image.src = result.img
+        }
+    });
+
+    function callSave() {
+        const resultString = sessionStorage.getItem('result');
+        const result = JSON.parse(resultString);
+
+        fetch('http://127.0.0.1:5000/age_save', {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(result),
+            credentials: 'include'})
+        .then(response => response.json())
+        .then(data => {
+            if (data.success){
+                console.log(data);
+                alert('저장 완료!')
+            }
+            else{
+                alert('저장 실패')
+            }
+        })
+        .catch(error => {
+            // 에러 발생
+            console.error('Error:', error);
+        });
+    }
+
+
+    </script>
+
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">Face World</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">메인</a></li>
+                <li class="nav-item" ><a id="userNameElement" class="nav-link" href="/detail.html"></a></li>
+                <li class="nav-item" id="loginElement"><a class="nav-link" href="/login.html">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+    <div class="container my-5">
+        <h3 class="text-center mb-4" id="firstLine"></h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-4" id="ageElement"></h5>
+                        <div class="mb-4">
+                            <img src="img/age/age.png" alt="Placeholder"
+                                 class="age-image" height=50% width=50% >
+                        </div>
+                        <p id="secondLine"></p>
+                        <div class="btn-group">
+                            <form id="myForm" method="post">
+                                <input type="hidden" id="input_data" name="input_data" value="1">
+                                <button class="btn btn-primary"  type="button" onclick="callSave()">결과 저장</button>
+                            </form>
+                            <button class="btn btn-secondary" onclick="window.location.href='age_upload.html'">다시 하기</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container my-5">
+        <h3 class="text-center mb-4" id="keyword">추천 동영상({{keyword}})</h3>
+        <div class="row justify-content-center">
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <a id="link" target="_blank">
+
+                        
+                        <img id="thumnail" class="card-img-top" alt="Thumbnail" height=50% width=50%>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title" id="title"></h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <a id="link2" target="_blank">
+
+                        
+                        <img id="thumnail2" class="card-img-top" alt="Thumbnail" height=50% width=50%>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title" id='title2'></h5>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5"><p class="m-0 text-white">Copyright &copy; Your Website 2023</div>
+</footer>
+<!-- Core theme JS-->
+<script src="js/fastbootstrap.js"></script>
+
+</body>
+</html>
